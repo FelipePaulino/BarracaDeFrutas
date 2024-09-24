@@ -4,7 +4,7 @@ import Banner from "@/components/banner";
 import HomeDisplay from "@/components/homeDisplay";
 import FruitList from "@/components/fruitsList";
 import Footer from "@/components/footer";
-import ModalPurchase from "@/components/modalPurchase";
+import ModalPurchase from "@/components/ModalPurchase";
 import Grid2 from "@mui/material/Grid2";
 
 const Home = () => {
