@@ -37,43 +37,43 @@ Antes de rodar o projeto, você precisará ter instalado em sua máquina:
 
 2. Instale as dependências:
 
-npm install
+   npm install
 
 3. Configure o Firebase:
 
-Crie um projeto no Firebase Console.
-Habilite o Firestore no modo de teste.
-Crie um arquivo .env.local na raiz do projeto e adicione suas credenciais Firebase:
+   Crie um projeto no Firebase Console.
+   Habilite o Firestore no modo de teste.
+   Crie um arquivo .env.local na raiz do projeto e adicione suas credenciais Firebase:
 
 ### env
 
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+    NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+    NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 
 4. Rode o projeto localmente:
 
-npm run dev
+   npm run dev
 
-O projeto estará disponível em: http://localhost:3000.
+   O projeto estará disponível em: http://localhost:3000.
 
 ### Estrutura do Projeto
 
-/components: Contém os componentes reutilizáveis, como o banner, lista de frutas, e botões de ação.
-/context: Gerenciamento de estados globais como o carrinho de compras e filtro de frutas.
-/services: Arquivos que tratam a comunicação com o Firebase Firestore, utilizando React Query.
-/pages: Páginas da aplicação, como a página principal, página do carrinho, e a página de cadastro/edição de frutas.
-/types: Tipagem TypeScript e schemas de validação Zod.
+    /components: Contém os componentes reutilizáveis, como o banner, lista de frutas, e botões de ação.
+    /context: Gerenciamento de estados globais como o carrinho de compras e filtro de frutas.
+    /services: Arquivos que tratam a comunicação com o Firebase Firestore, utilizando React Query.
+    /pages: Páginas da aplicação, como a página principal, página do carrinho, e a página de cadastro/edição de frutas.
+    /types: Tipagem TypeScript e schemas de validação Zod.
 
 ### Uso do React Hook Form e Zod
 
-O projeto utiliza React Hook Form em conjunto com Zod para validação de formulários de forma eficiente. O uso do useForm permite o gerenciamento de estados de formulário com alto desempenho, enquanto o Zod lida com a validação de dados através de schemas.
+    O projeto utiliza React Hook Form em conjunto com Zod para validação de formulários de forma eficiente. O uso do useForm permite o gerenciamento de estados de formulário com alto desempenho, enquanto o Zod lida com a validação de dados através de schemas.
 
-Exemplo de uso:
+    Exemplo de uso:
 
-const { register, handleSubmit, formState: { errors } } = useForm<FruitFormInputs>({
-resolver: zodResolver(fruitSchema),
-});
+    const { register, handleSubmit, formState: { errors } } = useForm<FruitFormInputs>({
+    resolver: zodResolver(fruitSchema),
+    });
