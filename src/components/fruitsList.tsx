@@ -71,7 +71,7 @@ const FruitList = () => {
 
   return (
     <Grid style={{ padding: "40px" }}>
-      <Typography variant="h4" gutterBottom align="center">
+      <Typography variant="h4" gutterBottom align="center" style={{ color: '#666' }}>
         Lista de Frutas
       </Typography>
       <Grid container spacing={3} justifyContent="center">
