@@ -15,9 +15,9 @@ export const useAddToCart = () => {
 
   return useMutation({
     mutationFn: async (newProduct: {
-      fruta: string;
-      quantidade: number;
-      valor: number;
+      name: string;
+      quantity: number;
+      value: number;
       url: string;
     }) => {
       const cartRef = collection(db, "cart");
@@ -26,7 +26,7 @@ export const useAddToCart = () => {
 
       snapshot.forEach((doc) => {
         const item = doc.data();
-        if (item.fruta === newProduct.fruta) {
+        if (item.name === newProduct.name) {
           existingItemId = doc.id;
         }
       });
@@ -39,8 +39,7 @@ export const useAddToCart = () => {
 
         if (existingProduct) {
           await updateDoc(productRef, {
-            quantidade:
-              (existingProduct.quantidade || 1) + newProduct.quantidade,
+            quantity: (existingProduct.quantity || 1) + newProduct.quantity,
             url: newProduct.url,
           });
         }
@@ -49,7 +48,7 @@ export const useAddToCart = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["carrinho"] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };
@@ -58,16 +57,16 @@ export const useUpdateQuantity = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updateData: { id: string; quantidade: number }) => {
+    mutationFn: async (updateData: { id: string; quantity: number }) => {
       const productRef = doc(db, "cart", updateData.id);
-      await updateDoc(productRef, { quantidade: updateData.quantidade });
-      return { id: updateData.id, quantidade: updateData.quantidade };
+      await updateDoc(productRef, { quantity: updateData.quantity });
+      return { id: updateData.id, quantity: updateData.quantity };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["carrinho"] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
     onError: (error) => {
-      console.error("Erro ao atualizar a quantidade:", error);
+      console.error("Error updating quantity:", error);
     },
   });
 };
@@ -81,10 +80,10 @@ export const useRemoveItem = () => {
       await deleteDoc(itemRef);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["carrinho"] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
     onError: (error) => {
-      console.error("Erro ao remover item:", error);
+      console.error("Error removing item:", error);
     },
   });
 };

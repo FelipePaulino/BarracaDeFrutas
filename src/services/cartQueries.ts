@@ -13,20 +13,20 @@ export const fetchCartItems = async () => {
 
 export const useCartItems = () => {
   return useQuery<any[]>({
-    queryKey: ["carrinho"],
+    queryKey: ["cart"],
     queryFn: fetchCartItems,
   });
 };
 
-export const fetchFrutas = async (): Promise<any[]> => {
-  const frutasCollectionRef = collection(db, "frutas");
-  const snapshot = await getDocs(frutasCollectionRef);
-  const frutas = snapshot.docs.map((doc) => ({
+export const fetchFruits = async (): Promise<any[]> => {
+  const fruitsCollectionRef = collection(db, "fruits");
+  const snapshot = await getDocs(fruitsCollectionRef);
+  const fruits = snapshot.docs.map((doc) => ({
     id: doc.id,
-    fruta: doc.data().fruta,
-    quantidade: doc.data().quantidade,
-    valor: doc.data().valor,
+    name: doc.data().name,
+    quantity: doc.data().quantity,
+    value: doc.data().value,
     url: doc.data().url,
   }));
-  return frutas;
+  return fruits;
 };

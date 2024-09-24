@@ -3,17 +3,17 @@ import React, { useEffect, useState } from "react";
 import { Card, Typography, Button, Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useAddToCart } from "@/services/cartMutations";
-import { fetchFrutas } from "@/services/cartQueries";
+import { fetchFruits } from "@/services/cartQueries";
 import { useFilter } from "@/context/filterContext";
 import AspectRatio from "@mui/joy/AspectRatio";
 import CardContent from "@mui/joy/CardContent";
-import NoResults from "@/components/NoResults";
+import NoResults from "@/components/noResults";
 
 interface Fruit {
   id: string;
-  fruta: string;
-  quantidade: number;
-  valor: number;
+  name: string;
+  quantity: number;
+  value: number;
   url: string;
 }
 
@@ -22,28 +22,28 @@ const FruitList = () => {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const {
-    data: frutas = [],
+    data: fruits = [],
     isLoading,
     isError,
   } = useQuery<Fruit[]>({
-    queryKey: ["frutas"],
-    queryFn: fetchFrutas,
+    queryKey: ["fruits"],
+    queryFn: fetchFruits,
   });
 
   const { mutate: addToCart } = useAddToCart();
 
-  const frutasFiltradas = frutas.filter((fruta) =>
-    fruta.fruta.toLowerCase().includes(filter.toLowerCase())
+  const filteredFruits = fruits.filter((fruit) =>
+    fruit.name.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const functionAddToCart = (fruta: Fruit) => {
-    setLoadingId(fruta.id);
+  const handleAddToCart = (fruit: Fruit) => {
+    setLoadingId(fruit.id);
     addToCart(
       {
-        fruta: fruta.fruta,
-        quantidade: 1,
-        valor: fruta.valor,
-        url: fruta.url,
+        name: fruit.name,
+        quantity: 1,
+        value: fruit.value,
+        url: fruit.url,
       },
       {
         onSettled: () => setLoadingId(null),
@@ -65,7 +65,7 @@ const FruitList = () => {
     return <Typography variant="h6">Erro ao carregar frutas</Typography>;
   }
 
-  if (frutasFiltradas.length === 0) {
+  if (filteredFruits.length === 0) {
     return <NoResults message="Não encontramos frutas com esse nome." />;
   }
 
@@ -75,8 +75,8 @@ const FruitList = () => {
         Lista de Frutas
       </Typography>
       <Grid container spacing={3} justifyContent="center">
-        {frutasFiltradas.map((fruta: Fruit) => (
-          <Grid item key={fruta.id} xs={12} sm={6} md={4} lg={2}>
+        {filteredFruits.map((fruit: Fruit) => (
+          <Grid item key={fruit.id} xs={12} sm={6} md={4} lg={2}>
             <Card
               sx={{
                 width: "100%",
@@ -94,8 +94,8 @@ const FruitList = () => {
                 sx={{ backgroundColor: "#f0f0f0" }}
               >
                 <img
-                  src={fruta.url}
-                  alt={fruta.fruta}
+                  src={fruit.url}
+                  alt={fruit.name}
                   style={{
                     objectFit: "contain",
                     width: "100%",
@@ -113,20 +113,20 @@ const FruitList = () => {
                 }}
               >
                 <Typography variant="h6" gutterBottom>
-                  {fruta.fruta}
+                  {fruit.name}
                 </Typography>
                 <Typography
                   variant="body1"
                   color="textSecondary"
                   sx={{ marginBottom: "10px" }}
                 >
-                  Preço: R$ {fruta.valor.toFixed(2)}
+                  Preço: R$ {fruit.value.toFixed(2)}
                 </Typography>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => functionAddToCart(fruta)}
-                  disabled={loadingId === fruta.id}
+                  onClick={() => handleAddToCart(fruit)}
+                  disabled={loadingId === fruit.id}
                   sx={{
                     backgroundColor: "#004d40",
                     "&:hover": {
@@ -135,7 +135,7 @@ const FruitList = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {loadingId === fruta.id
+                  {loadingId === fruit.id
                     ? "Adicionando..."
                     : "Adicionar ao Carrinho"}
                 </Button>

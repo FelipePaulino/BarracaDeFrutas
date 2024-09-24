@@ -18,13 +18,13 @@ import jsPDF from "jspdf";
 import Banner from "@/components/banner";
 import Footer from "@/components/footer";
 import { z } from "zod";
-import NoResults from "@/components/NoResults";
+import NoResults from "@/components/noResults";
 
-interface CarrinhoItem {
+interface CartItem {
   id: string;
-  fruta: string;
-  quantidade: number;
-  valor: number;
+  name: string;
+  quantity: number;
+  value: number;
   url: string;
 }
 
@@ -33,14 +33,14 @@ const quantitySchema = z
   .min(1, { message: "A quantidade deve ser maior que 0" });
 
 const CartPage = () => {
-  const { data: carrinho = [], isLoading, isError } = useCartItems();
+  const { data: cart = [], isLoading, isError } = useCartItems();
   const { filter } = useFilter();
   const { clearCart, setShowModal } = useCart();
   const { mutate: removeItem } = useRemoveItem();
   const { mutate: updateQuantity } = useUpdateQuantity();
   const router = useRouter();
 
-  const [quantidadeErrors, setQuantidadeErrors] = useState<{
+  const [quantityErrors, setQuantityErrors] = useState<{
     [id: string]: string | null;
   }>({});
 
@@ -48,26 +48,26 @@ const CartPage = () => {
     removeItem(id);
   };
 
-  const handleQuantityChange = (id: string, quantidade: string) => {
-    const quantidadeParsed = Number(quantidade);
+  const handleQuantityChange = (id: string, quantity: string) => {
+    const parsedQuantity = Number(quantity);
 
-    const result = quantitySchema.safeParse(quantidadeParsed);
+    const result = quantitySchema.safeParse(parsedQuantity);
 
     if (result.success) {
-      setQuantidadeErrors((prevErrors) => ({
+      setQuantityErrors((prevErrors) => ({
         ...prevErrors,
         [id]: null,
       }));
-      updateQuantity({ id, quantidade: quantidadeParsed });
+      updateQuantity({ id, quantity: parsedQuantity });
     } else {
-      setQuantidadeErrors((prevErrors) => ({
+      setQuantityErrors((prevErrors) => ({
         ...prevErrors,
         [id]: result.error.errors[0].message,
       }));
     }
   };
 
-  const gerarPDF = () => {
+  const generatePDF = () => {
     const doc = new jsPDF();
 
     doc.setFillColor(255, 249, 204);
@@ -82,25 +82,25 @@ const CartPage = () => {
     doc.text("Valor Unitário", 120, 30);
     doc.text("Total", 160, 30);
 
-    let linha = 40;
-    let valorTotal = 0;
+    let line = 40;
+    let totalValue = 0;
 
-    if (carrinho.length === 0) {
-      doc.text("Carrinho vazio", 10, linha);
+    if (cart.length === 0) {
+      doc.text("Carrinho vazio", 10, line);
     } else {
-      carrinho.forEach((item) => {
-        const totalItem = item.valor * item.quantidade;
-        valorTotal += totalItem;
+      cart.forEach((item) => {
+        const totalItemValue = item.value * item.quantity;
+        totalValue += totalItemValue;
 
-        doc.text(item.fruta, 10, linha);
-        doc.text(item.quantidade.toString(), 80, linha);
-        doc.text(`R$ ${item.valor.toFixed(2)}`, 120, linha);
-        doc.text(`R$ ${totalItem.toFixed(2)}`, 160, linha);
+        doc.text(item.name, 10, line);
+        doc.text(item.quantity.toString(), 80, line);
+        doc.text(`R$ ${item.value.toFixed(2)}`, 120, line);
+        doc.text(`R$ ${totalItemValue.toFixed(2)}`, 160, line);
 
-        linha += 10;
+        line += 10;
       });
 
-      doc.text(`Valor Total: R$ ${valorTotal.toFixed(2)}`, 10, linha + 10);
+      doc.text(`Valor Total: R$ ${totalValue.toFixed(2)}`, 10, line + 10);
     }
 
     doc.save("resumo-compra.pdf");
@@ -110,8 +110,8 @@ const CartPage = () => {
     router.push("/");
   };
 
-  const carrinhoFiltrado = carrinho.filter((item) =>
-    item.fruta.toLowerCase().includes(filter.toLowerCase())
+  const filteredCart = cart.filter((item) =>
+    item.name.toLowerCase().includes(filter.toLowerCase())
   );
 
   if (isLoading) {
@@ -122,7 +122,7 @@ const CartPage = () => {
     return <Typography variant="h6">Erro ao carregar o carrinho.</Typography>;
   }
 
-  if (carrinhoFiltrado.length === 0) {
+  if (filteredCart.length === 0) {
     return (
       <>
         <Banner />
@@ -132,8 +132,8 @@ const CartPage = () => {
     );
   }
 
-  const valorTotal = carrinhoFiltrado.reduce(
-    (total, item) => total + item.valor * item.quantidade,
+  const totalValue = filteredCart.reduce(
+    (total, item) => total + item.value * item.quantity,
     0
   );
 
@@ -147,7 +147,7 @@ const CartPage = () => {
         </Typography>
 
         <Grid container spacing={3}>
-          {carrinhoFiltrado.map((item: CarrinhoItem) => (
+          {filteredCart.map((item: CartItem) => (
             <Grid item xs={12} key={item.id}>
               <Box
                 sx={{
@@ -163,14 +163,14 @@ const CartPage = () => {
                 <CardMedia
                   component="img"
                   image={item.url}
-                  alt={item.fruta}
+                  alt={item.name}
                   sx={{ width: 100, height: 100, objectFit: "contain" }}
                 />
 
                 <Box sx={{ flex: 1, marginLeft: "16px" }}>
-                  <Typography variant="h6">{item.fruta}</Typography>
+                  <Typography variant="h6">{item.name}</Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Preço unitário: R$ {item.valor.toFixed(2)}
+                    Preço unitário: R$ {item.value.toFixed(2)}
                   </Typography>
                 </Box>
 
@@ -182,12 +182,12 @@ const CartPage = () => {
                   >
                     <TextField
                       type="number"
-                      value={item.quantidade}
+                      value={item.quantity}
                       onChange={(e) =>
                         handleQuantityChange(item.id, e.target.value)
                       }
-                      error={!!quantidadeErrors[item.id]}
-                      helperText={quantidadeErrors[item.id]}
+                      error={!!quantityErrors[item.id]}
+                      helperText={quantityErrors[item.id]}
                       InputProps={{ inputProps: { min: 1 } }}
                       sx={{
                         width: "80px",
@@ -205,7 +205,7 @@ const CartPage = () => {
                     </Box>
                   </Box>
                   <Typography variant="body1">
-                    R$ {(item.valor * item.quantidade).toFixed(2)}
+                    R$ {(item.value * item.quantity).toFixed(2)}
                   </Typography>
                 </Box>
               </Box>
@@ -227,13 +227,13 @@ const CartPage = () => {
           }}
         >
           <Typography variant="h6">
-            Valor total: R$ {valorTotal.toFixed(2)}
+            Valor total: R$ {totalValue.toFixed(2)}
           </Typography>
 
           <Button
             variant="contained"
             color="primary"
-            onClick={gerarPDF}
+            onClick={generatePDF}
             sx={{
               padding: "10px 20px",
               backgroundColor: "#004d40",

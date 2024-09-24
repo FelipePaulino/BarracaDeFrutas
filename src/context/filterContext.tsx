@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface FilterContextType {
   filter: string;

@@ -5,14 +5,14 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface Fruit {
   id: string;
-  fruta: string;
-  quantidade: number;
-  valor: number;
+  name: string;
+  quantity: number;
+  value: number;
 }
 
 interface CartContextType {
-  carrinho: Fruit[];
-  addToCart: (fruta: Fruit) => void;
+  cart: Fruit[];
+  addToCart: (product: Fruit) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => Promise<void>;
   showModal: boolean;
@@ -24,23 +24,21 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error("useCart deve ser usado dentro de um CartProvider");
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [carrinho, setCarrinho] = useState<Fruit[]>([]);
+  const [cart, setCart] = useState<Fruit[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const addToCart = (produto: Fruit) => {
-    setCarrinho((prevCarrinho) => [...prevCarrinho, produto]);
+  const addToCart = (product: Fruit) => {
+    setCart((prevCart) => [...prevCart, product]);
   };
 
   const removeFromCart = (id: string) => {
-    setCarrinho((prevCarrinho) =>
-      prevCarrinho.filter((item) => item.id !== id)
-    );
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
   const queryClient = useQueryClient();
@@ -55,18 +53,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       );
       await Promise.all(deletePromises);
 
-      setCarrinho([]);
+      setCart([]);
 
-      queryClient.invalidateQueries({ queryKey: ["carrinho"] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     } catch (error) {
-      console.error("Erro ao limpar o carrinho: ", error);
+      console.error("Error clearing cart: ", error);
     }
   };
 
   return (
     <CartContext.Provider
       value={{
-        carrinho,
+        cart,
         addToCart,
         removeFromCart,
         clearCart,

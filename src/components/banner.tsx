@@ -1,12 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import {
-  Grid2,
+  Grid,
   TextField,
   IconButton,
   Badge,
   useMediaQuery,
   useTheme,
+  Avatar,
+  Tooltip,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useFilter } from "@/context/filterContext";
@@ -15,16 +17,13 @@ import { searchSchema } from "@/types/validationSchema";
 
 const Banner = () => {
   const { setFilter } = useFilter();
-  const { data: carrinho = [] } = useCartItems();
+  const { data: cart = [] } = useCartItems();
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const totalItensCarrinho = carrinho.reduce(
-    (total, item) => total + item.quantidade,
-    0
-  );
+  const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -43,12 +42,16 @@ const Banner = () => {
     router.push("/carrinho");
   };
 
+  const handleGoToNewFruits = () => {
+    router.push("/novasFrutas");
+  };
+
   const handleGoToHome = () => {
     router.push("/");
   };
 
   return (
-    <Grid2
+    <Grid
       container
       display={"flex"}
       justifyContent={isMobile ? "center" : "space-between"}
@@ -59,7 +62,7 @@ const Banner = () => {
         padding: isMobile ? "10px" : "20px",
       }}
     >
-      <Grid2 onClick={handleGoToHome} sx={{ mb: isMobile ? 2 : 0 }}>
+      <Grid onClick={handleGoToHome} sx={{ mb: isMobile ? 2 : 0 }}>
         <img
           src="/logoPro.png"
           alt="logoPro"
@@ -67,9 +70,9 @@ const Banner = () => {
           height={isMobile ? "120px" : "150px"}
           style={{ cursor: "pointer" }}
         />
-      </Grid2>
+      </Grid>
 
-      <Grid2
+      <Grid
         display={"flex"}
         flexDirection={isMobile ? "column" : "row"}
         alignItems={"center"}
@@ -84,28 +87,28 @@ const Banner = () => {
           sx={{
             backgroundColor: "#ccc",
             borderRadius: "20px",
-            height: isMobile ? "35px" : "40px",
+            height: isMobile ? "35px" : "50px",
             width: isMobile ? "100%" : "auto",
             "& fieldset": {
               borderRadius: "20px",
             },
             "& .MuiInputBase-input": {
-              height: isMobile ? "35px" : "40px",
+              height: isMobile ? "35px" : "50px",
               padding: "0 14px",
             },
           }}
           onChange={handleInputChange}
           inputProps={{
-            style: { height: isMobile ? "35px" : "40px" },
+            style: { height: isMobile ? "35px" : "50px" },
           }}
         />
 
         <IconButton
           onClick={handleGoToCart}
-          aria-label={`Ir para o carrinho com ${totalItensCarrinho} itens`}
+          aria-label={`Ir para o carrinho com ${totalCartItems} itens`}
         >
           <Badge
-            badgeContent={totalItensCarrinho}
+            badgeContent={totalCartItems}
             color="secondary"
             sx={{
               "& .MuiBadge-badge": {
@@ -123,8 +126,18 @@ const Banner = () => {
             />
           </Badge>
         </IconButton>
-      </Grid2>
-    </Grid2>
+        <Tooltip title="Adicione sua Fruta">
+          <IconButton onClick={handleGoToNewFruits}>
+            <img
+              src="/add.webp"
+              alt="Carrinho de compras"
+              width={isMobile ? "60px" : "65x"}
+              height={isMobile ? "60px" : "65px"}
+            />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+    </Grid>
   );
 };
 
